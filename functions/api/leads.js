@@ -26,7 +26,7 @@ export async function onRequestGet({ request, env }) {
       { headers: { Authorization: `Bearer ${token}` } }
     );
     if (!res.ok) {
-      return json({ error: `Google Sheets returned ${res.status}. Share the sheet with ${sa.client_email} as Viewer.` }, 502);
+      return json({ error: `Google Sheets returned ${res.status}. Share the sheet with ${sa.client_email} as Viewer.` }, 424);
     }
     const { values = [] } = await res.json();
     const [header = [], ...body] = values;
@@ -40,7 +40,7 @@ export async function onRequestGet({ request, env }) {
       rows,
     });
   } catch (err) {
-    return json({ error: `The dashboard API is not configured: ${err.message}.` }, 500);
+    return json({ error: `The dashboard API is not configured: ${err.message}.` }, 424);
   }
 }
 

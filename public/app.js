@@ -132,7 +132,7 @@ async function load(manual = false) {
   try {
     if (demo) throw Object.assign(new Error("demo"), { fallback: true });
     const res = await fetch("/api/leads", { credentials: "same-origin", cache: "no-store" });
-    if (!(res.headers.get("content-type") || "").includes("json")) throw Object.assign(new Error("no api"), { fallback: true });
+    if (!(res.headers.get("content-type") || "").includes("json")) throw Object.assign(new Error("The data API did not answer. Open /api/leads to see why."), { fallback: ["localhost", "127.0.0.1"].includes(location.hostname) });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || `The API returned ${res.status}.`);
     $("notice").hidden = true;
