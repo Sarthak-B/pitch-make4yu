@@ -1,0 +1,9 @@
+name = "make4yu-pitching"
+pages_build_output_dir = "public"
+compatibility_date = "2024-11-01"
+
+# Safe to publish. Everything private (sheet ID, Access settings, Google key) is a
+# Cloudflare Pages secret, pushed by the Deploy workflow from GitHub secrets.
+[vars]
+SHEET_RANGE = "Leads!A1:Z"
+ALLOW_PUBLIC = "false"

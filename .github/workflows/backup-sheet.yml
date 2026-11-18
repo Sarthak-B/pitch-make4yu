@@ -1,0 +1,46 @@
+name: Back up the sheet
+
+# Every night at 00:30 IST, saves a dated CSV of the Leads tab into a SEPARATE PRIVATE repo.
+# Nothing is written to this public repo, and the log only prints a row count.
+on:
+  schedule:
+    - cron: "0 19 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  backup:
+    # Turned on by setup.sh once a backup repo token exists.
+    if: vars.BACKUP_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check out the private backup repo
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ secrets.BACKUP_REPO }}
+          token: ${{ secrets.BACKUP_REPO_TOKEN }}
+          path: private-backups
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Export the Leads tab
+        env:
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          SHEET_ID: ${{ secrets.SHEET_ID }}
+          SHEET_RANGE: Leads!A1:Z
+          BACKUP_DIR: private-backups/backups
+        run: node scripts/backup-sheet.mjs
+
+      - name: Commit to the private repo
+        working-directory: private-backups
+        run: |
+          git config user.name "make4yu-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add backups
+          git diff --cached --quiet && echo "No changes since the last backup" || (git commit -q -m "Sheet backup $(date -u +%F)" && git push -q)

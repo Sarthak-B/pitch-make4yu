@@ -1,0 +1,9 @@
+node_modules/
+.wrangler/
+.dev.vars
+service-account*.json
+*.key.json
+# Real lead data must never be committed here
+backups/
+private-backups/
+*.csv
